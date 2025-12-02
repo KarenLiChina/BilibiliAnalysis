@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import json
 import os
 from typing import List
@@ -27,7 +28,6 @@ class BilibiliLoader:
         """获取指定BV号和分P序号的字幕，并合并为文本。"""
         v = video.Video(bvid=bvid, credential=self.credential)
         info = await v.get_info()
-
         base_metadata = {
             'bvid': bvid,
             'video_title': info['title'],
@@ -48,13 +48,16 @@ class BilibiliLoader:
             page_number = page['page']  # 分P序号，对应URL中的 p=5 里的5
             cid = page['cid']  # 该分P的cid，是获取字幕的关键
             part_title = page['part']  # 分P的标题
+            timestamp = page['ctime']
+            utc_time = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
             # 生成该分P的完整元数据
             page_metadata = base_metadata.copy()
             page_metadata.update({
                 'page_number': page_number,
                 'part_title': part_title,
-                'cid': cid
+                'cid': cid,
+                'publish_data': utc_time
             })
 
             # 2. 获取字幕列表 (以下代码逻辑与你之前使用的类似)
