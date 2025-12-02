@@ -1,11 +1,10 @@
 import asyncio
-import json
 import os
 
-import aiohttp
-from bilibili_api import video, sync, Credential
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_chroma import Chroma
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from bilibili_loader import BilibiliLoader
 
@@ -15,35 +14,30 @@ load_dotenv()
 model = ChatOpenAI(model=os.getenv("MODEL_NAME"),
                    api_key=os.getenv("OPENAI_API_KEY"),
                    base_url=os.getenv("BASE_URL"))
-
+embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"),
+                              base_url=os.getenv("BASE_URL"))
 persist_dir = 'chroma_data_dir'  # 向量数据库的目录
 
 # 初始化视频的连接
-urls = []
+urls = ["BV1hwn7zqEKP",
+        "BV1gG411f7zX"]
 
 docs = []  # document 的数组
+loader = BilibiliLoader()
 
 
-
-# 使用示例
-async def main():
-    # 1. 初始化Loader，填入你的cookie信息
-    loader = BilibiliLoader()
-    # 2. 准备要处理的B站视频URL列表
-    urls = [
-        "BV1hwn7zqEKP",
-        "BV1gG411f7zX"
-        # ... 可以添加更多
-    ]
-    # 3. 加载字幕
+async def load_documents():
     subtitles = await loader.load(urls)
-    print(subtitles)
-    # 4. 打印结果
-    for doc in subtitles:
-        print(f"分P {doc.metadata.get('page_number')}: {doc.metadata.get('part_title')}: {doc.page_content}")
-        print("-" * 40)
+    docs.extend(subtitles)
 
 
-# 运行
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(load_documents())
+
+print(len(docs))
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=30)
+split_doc = text_splitter.split_documents(docs)
+print(len(split_doc))
+
+# 向量数据库的持久化
+vectorstore = Chroma.from_documents(split_doc, embeddings, persist_directory=persist_dir)  # 并且把向量数据持久化到磁盘
