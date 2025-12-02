@@ -1,0 +1,9 @@
+langchain
+langchain-openai
+langserve[all]
+langchain_community
+langchain-chroma
+langgraph
+langchain-core
+bilibili-api-python
+aiohttp
