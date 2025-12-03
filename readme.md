@@ -19,7 +19,10 @@ pip install -r requirements.txt
 3. 切换到 “应用程序” (Application) 或 “存储” (Storage) 标签页。
 4. 在左侧找到 “Cookies” 并点击你当前访问的B站域名（如 www.bilibili.com）。
 5. 在右侧列表中找到 SESSDATA、bili_jct 和 buvid3 这三项，将它们的值复制出来，填入代码中。
+每次运行前确保session信息没有过期
 
+## 加载bilibili字幕，通过bvid 来获取相同bvid下的不同page，给每个page的字幕生成一个Document，最终返回Document的list，最终向量化后存储到向量数据库中
+bilibili_subtitle_store.py
 
-## 加载bilibili字幕，通过bvid 来获取相同bvid下的不同page，给每个page的字幕生成一个Document，最终返回Document的list
+## 
 bilibili_loader.py

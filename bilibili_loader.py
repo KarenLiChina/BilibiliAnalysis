@@ -57,7 +57,7 @@ class BilibiliLoader:
                 'page_number': page_number,
                 'part_title': part_title,
                 'cid': cid,
-                'publish_data': utc_time
+                'publish_date': utc_time
             })
 
             # 2. 获取字幕列表 (以下代码逻辑与你之前使用的类似)
