@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from pydantic.v1 import BaseModel, Field
 
 load_dotenv()
@@ -48,9 +48,9 @@ class Search(BaseModel):
 chain = {'question': RunnablePassthrough()} | prompt | model.with_structured_output(Search)
 # 此时chain 生成基于用户问题的 指令，没有真正的对向量数据库进行检索
 resp1 = chain.invoke('机器学习的算法有什么？')
-print(resp1) # 输出结果为：query='机器学习的算法' publish_year=None
+print(resp1)  # 输出结果为：query='机器学习的算法' publish_year=None
 resp1 = chain.invoke('2025年发布的视频介绍机器学习算法有哪些？')
-print(resp1) # 输出结果为： query='机器学习算法' publish_year='2025'
+print(resp1)  # 输出结果为： query='机器学习算法' publish_year='2025'
 
 
 def retrieval(search: Search):
@@ -60,7 +60,8 @@ def retrieval(search: Search):
         # "$eq" 是Chroma向量数据库固定的语法，表示等于
         _filter = {'publish_year': {"$eq": search.publish_year}}
     return vectorstore.similarity_search(search.query, filter=_filter)
+
 new_chain = chain | retrieval
 
-result= new_chain.invoke('2025年发布的视频介绍机器学习算法有哪些？')
+result = new_chain.invoke('2025年发布的视频介绍机器学习算法有哪些？')
 print([(doc.metadata) for doc in result])
