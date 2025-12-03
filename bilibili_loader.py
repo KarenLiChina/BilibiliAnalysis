@@ -50,14 +50,15 @@ class BilibiliLoader:
             part_title = page['part']  # 分P的标题
             timestamp = page['ctime']
             utc_time = datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-
+            year = int(datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc).strftime('%Y'))
             # 生成该分P的完整元数据
             page_metadata = base_metadata.copy()
             page_metadata.update({
                 'page_number': page_number,
                 'part_title': part_title,
                 'cid': cid,
-                'publish_date': utc_time
+                'publish_date': utc_time,
+                'publish_year': year
             })
 
             # 2. 获取字幕列表 (以下代码逻辑与你之前使用的类似)

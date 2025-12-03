@@ -24,5 +24,5 @@ pip install -r requirements.txt
 ## 加载bilibili字幕，通过bvid 来获取相同bvid下的不同page，给每个page的字幕生成一个Document，最终返回Document的list，最终向量化后存储到向量数据库中
 bilibili_subtitle_store.py
 
-## 
+## 定义数据模型，得到结构化的检索指令，通过链式chain方式去自动从向量数据库中检索
 bilibili_loader.py
